@@ -87,7 +87,7 @@ Assume $\bold{x} \in \mathbb{R}^{n \times 1}$ is a column vector, $X \in \mathbb
 
 5) $ \frac{\partial L}{\partial x}  = \frac{\partial L}{\partial y_2} \bold{1_m} $ (row summing trailing gradients)
 
-The last bit of necessary information is knowing how to backpropegate through element wise matrix multiplication. Let X and W be matrices of the same dimension and let $Y = X \odot W$.
+The last bit of necessary information is knowing how to backpropegate through element wise operations such as element wise matrix multiplication. Let X and W be matrices of the same dimension and let $Y = X \odot W$.
 
 6) $ \frac{\partial L}{\partial X} =  \frac{\partial L}{\partial Y} \odot W $ (similar result for $ \frac{\partial L}{\partial W}$)
 
@@ -98,24 +98,71 @@ The attention mechanism is the backbone of the Transformer architecture. It take
 
 $$
 
-\begin{align*} Attention(K, Q, V) = Softmax(\frac{QK^T}{d_k})V \end{align*} 
+\begin{align*} Attention(K, Q, V) = softmax(\frac{QK^T}{\sqrt{d_k}})V \end{align*} 
 
 $$
 
-I will be computing the gradients of a scalar output $L$ with respect to $K$, $Q$, and $V$ all elements of $\mathbb{R}^{n \times h}$. But before we jump in to the derivation, let's define a few variables.
+I will be computing the gradients of a scalar output $L$ with respect to $K$, $Q$, and $V$, all elements of $\mathbb{R}^{n \times h}$. Let's define a few variables.
 
-- $ W = \frac{QK^T}{d_k} \in \mathbb{R}^{n \times n} $
-- $ B = Softmax(W) \in \mathbb{R}^{n \times n}$
-- $ C = BV \in \mathbb{R}^{n \times h}$ 
+$$ 
 
-Note that Attention(K, Q, V) = C. Also, for the purposes of this example we will simply call all computation following the attention mechanism $ Loss(\cdot) $, which outputs a scalar value. The following computational graph provides a visual of the variables and how they interact.  
+\begin{align*}
 
-![random](../../assets/images/attention_graph.png)
+W &= \frac{QK^T}{d_k} \in \mathbb{R}^{n \times n} \\
+B &= softmax(W) \in \mathbb{R}^{n \times n} \\
+C &= BV \in \mathbb{R}^{n \times h} 
 
-Now, we can begin the derivation starting with $\frac{\partial L}{\partial V}$.
+\end{align*}
+
+$$
+
+Note that Attention(K, Q, V) = C. Also, for the purposes of this example we will simply call all computation following the attention mechanism $ Loss(\cdot) $, which outputs a scalar value. Before we jump in, we also need to determine how to backpropegate through the softmax function. 
+
+$$
+
+\begin{pmatrix}
+  z_1 & z_2 & \dots & z_K
+\end{pmatrix}
+\quad \xrightarrow{\text{softmax}} \quad
+\begin{pmatrix}
+  \frac{e^{z_1}}{\sum_{j=1}^{K} e^{z_j}} &
+  \frac{e^{z_2}}{\sum_{j=1}^{K} e^{z_j}} &
+  \dots &
+  \frac{e^{z_K}}{\sum_{j=1}^{K} e^{z_j}}
+\end{pmatrix}
+
+$$
+
+
+In Attention, softmax is applied to rows of the input matrix, so we need to be a little creative on how we represent the softmax function. The formulation I came up with is the following:
+
+$$ 
+
+\begin{align*} 
+
+B &= softmax(W) \\
+  &= exp(W) \odot ((exp(W)\bold{1_n})^{-1}\bold{1_n^T}) \\
+  & = B_1 \odot ((B_2)^{-1}\bold{1_n^T}) \\
+  & = B_1 \odot (B_3\bold{1_n^T}) \\
+  & = B_1 \odot B_4
+
+\end{align*} 
+
+$$ 
+
+Where $B_1 = exp(W)$, $B_2 = B_1\bold{1_n}$, $B_3 = B_2^{-1}$, and $B_4 = B_3\bold{1_n^T}$. You can image this as breaking up softmax into five distinct operations: expoentiating the input matrix, summing up the rows of the exponentiated matrix, taking the multiplicative to get the normalizaton factor, broadcasting back to the shape of the original matrix, and multiplying element wise. The following computational graph shows all the variables defined and how they interact. 
+
+
+![random](../../assets/images/attention.png)
+
+Now, we have all the neccesary pieces to begin!
 
 - $ \frac{\partial L}{\partial V} = B^T \frac{\partial L}{\partial C} = \zeta_1 \in \mathbb{R}^{n \times h}$
 - $ \frac{\partial L}{\partial B} = \zeta_1 V^T = \zeta_2 \in \mathbb{R}^{n \times n} $
+
+
+
+
 
 
 
