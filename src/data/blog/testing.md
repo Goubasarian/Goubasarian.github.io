@@ -208,8 +208,13 @@ B.retain_grad()
 C.retain_grad()
 
 L = C.sum() # scalar loss, could be anything. 
+
+
 ```
 
+```
+C is within floating point error to output of standard attention: True
+```
 
 
 
