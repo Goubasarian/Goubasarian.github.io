@@ -4,7 +4,7 @@ export const SITE = {
   profile: "https://Goubasarian.dev/",
   desc: "Hello everyone! My name is Emil, and I am an aspiring AI researcher.",
   title: "Emil's Blog",
-  ogImage: "astropaper-og.jpg",
+  // ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,
