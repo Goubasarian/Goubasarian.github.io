@@ -21,9 +21,9 @@ html[data-theme="dark"] {
 }
 
 
-/* html[data-theme="dark"] .katex-display {
+html[data-theme="dark"] .katex-display {
   filter: invert(1) hue-rotate(180deg) brightness(1.2);
-} */
+}
 
 @theme inline {
   --color-background: var(--background);

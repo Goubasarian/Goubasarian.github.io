@@ -1,7 +1,7 @@
 export const SITE = {
-  website: "https://astro-paper.pages.dev/", // replace this with your deployed domain
+  website: "https://Goubasarian.github.io/", // replace this with your deployed domain
   author: "Emil Goubasarian",
-  profile: "https://satnaing .dev/",
+  // profile: "https://satnaing.dev/",
   desc: "Hello everyone! My name is Emil, and I am an aspiring AI researcher.",
   title: "Emil's Blog",
   ogImage: "astropaper-og.jpg",
@@ -12,9 +12,9 @@ export const SITE = {
   showArchives: true,
   showBackButton: true, // show back button in post detail
   editPost: {
-    enabled: true,
+    enabled: false,
     text: "Edit page",
-    url: "https://github.com/satnaing/astro-paper/edit/main/",
+    url: "https://github.com/Goubasarian/apparent-ablation/edit/main/",
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
