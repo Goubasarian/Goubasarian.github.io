@@ -152,7 +152,7 @@ Assume $\bold{x} \in \mathbb{R}^{n \times 1}$ is a column vector, $X \in \mathbb
 
 
 
-The last bit of necessary information is knowing how to backpropegate through element wise operations such as element wise matrix multiplication. You can think of this as individually differentiating every scalar $Y_ij$ with respect to $X_ij$. Let X and W be matrices of the same dimension and let $Y = X \odot W$. 
+The last bit of necessary information is knowing how to backpropegate through element wise operations such as element wise matrix multiplication. You can think of this as individually differentiating every scalar $Y_{ij}$ with respect to $X_{ij}$. Let X and W be matrices of the same dimension and let $Y = X \odot W$. 
 
 
 
