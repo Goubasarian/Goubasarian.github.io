@@ -34,10 +34,6 @@ To write out the gradients, I will be adhering to the denominator-layout convent
 
 
 
-
-
-
-
 $$
 
 
@@ -118,7 +114,7 @@ Having a scalar output leads to some neat tricks through the chain rule, which a
 
 
 
-$Y_1 = WX_1$, $Y_2 = X_2W$, and $Z = Y_1 + Y_2$ where $W \in \mathbb{R}^{n \times m}$ and $X_1,X_2 \in \mathbb{R}^{m \times n}$.
+Let $Y_1 = WX_1$, $Y_2 = X_2W$, and $Z = Y_1 + Y_2$, where $W \in \mathbb{R}^{n \times m}$ and $X_1,X_2 \in \mathbb{R}^{m \times n}$.
 
 
 
