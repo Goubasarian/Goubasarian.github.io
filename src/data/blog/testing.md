@@ -179,6 +179,8 @@ Note that $QK^T = KQ^T$.
 
 ### Code Verification
 
+The following code defines all the variables we dicussed above. As a sanity check, I verify that attention is being calculated properly.  I created an arbritary scalar output by simply summing, but any differentable operation that produces a scalar would work.
+
 ```python
 import torch
 import torch.nn as nn
@@ -196,8 +198,9 @@ B1 = torch.exp(W) # (10, 10)
 B2 = B1.sum(dim = -1, keepdim = True) # (10, 1)
 B3 = (B2)**-1 # (10,1)
 B4 = B3 @ Ones.T # (10, 10)
+# B = B1 * B3
 B = B1 * B4 # (10, 10)
-C = B @ V # (10, 20)
+C = B @ V
 
 W.retain_grad()
 B1.retain_grad()
@@ -207,18 +210,96 @@ B4.retain_grad()
 B.retain_grad()
 C.retain_grad()
 
-L = C.sum() # scalar loss, could be anything. 
+L = C.sum() # scalar output, could be anything.
 
+# Sanity check
+Attn = F.scaled_dot_product_attention(Q, K, V)
+is_close = torch.allclose(Attn, C, atol = 1e-6)
+print(f"C is within floating point error to output of standard attention: {is_close}")
+```
+```
+>> C is within floating point error to output of standard attention: True
+```
+
+Now, we just need to replicate the derivations with code. I commented above gradients that had summing or broadcasting to show how you would normally see them in PyTorch.
+
+```python
+grad_C = C.grad # trailing gradient
+grad_V = B.T @ grad_C
+grad_B = grad_C @ V.T
+grad_B4 = B1 * grad_B
+# grad_B3 = grad_B4.sum(-1, keepdim=True)
+grad_B3 = grad_B4 @ Ones
+grad_B2 = -((B2 * B2)**-1) * grad_B3
+# grad_B1 = grad_B2 + grad_B * B4
+grad_B1 = grad_B2 @ Ones.T + grad_B * B4
+grad_W = B1 * grad_B1
+grad_Q = grad_W @ K * (d_k**-1)
+grad_K = grad_W.T @ Q * (d_k**-1)
+```
+
+Finally, the results where we compare the gradients in PyTorch with our manual derivations:
+
+```python
+print("Comparing gradients:")
+
+is_close_V = torch.allclose(grad_V, V.grad, atol=1e-6)
+diff_V = torch.abs(grad_V - V.grad).mean()
+print(f"grad_V is close: {is_close_V}, mean difference: {diff_V.item()}")
+
+is_close_B = torch.allclose(grad_B, B.grad, atol=1e-6)
+diff_B = torch.abs(grad_B - B.grad).mean()
+print(f"grad_B is close: {is_close_B}, mean difference: {diff_B.item()}")
+
+#comment out if you want to check pytorchified code
+is_close_B4 = torch.allclose(grad_B4, B4.grad, atol=1e-6)
+diff_B4 = torch.abs(grad_B4 - B4.grad).mean()
+print(f"grad_B4 is close: {is_close_B4}, mean difference: {diff_B4.item()}")
+
+is_close_B3 = torch.allclose(grad_B3, B3.grad, atol=1e-6)
+diff_B3 = torch.abs(grad_B3 - B3.grad).mean()
+print(f"grad_B3 is close: {is_close_B3}, mean difference: {diff_B3.item()}")
+
+is_close_B2 = torch.allclose(grad_B2, B2.grad, atol=1e-6)
+diff_B2 = torch.abs(grad_B2 - B2.grad).mean()
+print(f"grad_B2 is close: {is_close_B2}, mean difference: {diff_B2.item()}")
+
+is_close_B1 = torch.allclose(grad_B1, B1.grad, atol=1e-6)
+diff_B1 = torch.abs(grad_B1 - B1.grad).mean()
+print(f"grad_B1 is close: {is_close_B1}, mean difference: {diff_B1.item()}")
+
+is_close_W = torch.allclose(grad_W, W.grad, atol=1e-6)
+diff_W = torch.abs(grad_W - W.grad).mean()
+print(f"grad_W is close: {is_close_W}, mean difference: {diff_W.item()}")
+
+is_close_Q = torch.allclose(grad_Q, Q.grad, atol=1e-6)
+diff_Q = torch.abs(grad_Q - Q.grad).mean()
+print(f"grad_Q is close: {is_close_Q}, mean difference: {diff_Q.item()}")
+
+is_close_K = torch.allclose(grad_K, K.grad, atol=1e-6)
+diff_K = torch.abs(grad_K - K.grad).mean()
+print(f"grad_K is close: {is_close_K}, mean difference: {diff_K.item()}")
 
 ```
 
 ```
-C is within floating point error to output of standard attention: True
+Comparing gradients:
+grad_V is close: True, mean difference: 0.0
+grad_B is close: True, mean difference: 0.0
+grad_B4 is close: True, mean difference: 0.0
+grad_B3 is close: True, mean difference: 0.0
+grad_B2 is close: True, mean difference: 0.0
+grad_B1 is close: True, mean difference: 0.0
+grad_W is close: True, mean difference: 0.0
+grad_Q is close: True, mean difference: 1.5301630185149406e-08
+grad_K is close: True, mean difference: 1.6916310130454804e-08
 ```
 
+As can be seen, the results are nearly identical to the gradients in PyTorch with the differences being only floating precision errors. 
 
 
+## Conclusion
 
-
+I introduced a few concepts needed to backpropegate through attention. Then, I manually derived the gradients for each component of the attention compututational graph. Lastly, I verified the correctenss of the derivations through code. I hope you found this helpful/interesting, and thank you for reading!
 
 
