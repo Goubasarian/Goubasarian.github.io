@@ -17,16 +17,7 @@ description: Step by step derivation of gradients through a Attention mechanism 
 
 
 
-
-
-
-
 In this post, I will be manually deriving the gradients of the keys, queries, and values (K, Q, V) of the standard attention formula, assuming a downstream scalar objective function. This is a fun exercise to practice the basics of backpropagation and often appears in AI-related interviews. I highly recommend carefully reading through the preliminaries and attempting the derivation yourself. 
-
-
-
-
-
 
 
 ## Preliminaries
