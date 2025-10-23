@@ -1,11 +1,11 @@
 ---
 author: Emil Goubasarian
 pubDatetime: 2025-10-03T20:40:08Z
-title: Backpropegating Through Attention
+title: backpropagating Through Attention
 featured: True
 draft: false
 tags: 
-  - backpropegation
+  - backpropagation
   
 description: Step by step derivation of gradients through a Attention mechanism under the assumption of a scalar loss
 ---
@@ -26,7 +26,7 @@ In this post, I will be manually deriving the gradients of the keys, queries, an
 
 
 
-This section is meant to be a quick refresher and assumes prior knowledge of backpropagation, so if this is your first time manually backpropegating with tensors, check out Karpathy's videos on backpropegation beforehand. 
+This section is meant to be a quick refresher and assumes prior knowledge of backpropagation, so if this is your first time manually backpropagating with tensors, check out Karpathy's videos on backpropagation beforehand. 
 
 
 
@@ -198,7 +198,7 @@ $$
 
 
 
-W &= \frac{QK^T}{d_k} \in \mathbb{R}^{n \times n} \\
+W &= \frac{QK^T}{\sqrt{d_k}} \in \mathbb{R}^{n \times n} \\
 
 B &= softmax(W) \in \mathbb{R}^{n \times n} \\
 
