@@ -14,7 +14,7 @@ export const SITE = {
   editPost: {
     enabled: true,
     text: "Edit page",
-    url: "https://github.com/Goubasarian/Goubasarian.github.io/edit/main/src/data/blog/",
+    url: "https://github.com/Goubasarian/Goubasarian.github.io/edit/main/",
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
