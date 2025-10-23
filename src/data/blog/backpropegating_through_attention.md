@@ -318,13 +318,7 @@ Notice the two paths to $B_1$. This means the gradients need to be accumulated.
 
 - $ \frac{\partial L}{\partial Q} = \zeta_7\frac{K}{\sqrt{d_k}} \in \mathbb{R}^{n \times h} $
 
-
-
-Note that $QK^T = KQ^T$.
-
-
-
-- $ \frac{\partial L}{\partial K} = \zeta_7 \frac{Q}{\sqrt{d_k}} \in \mathbb{R}^{n \times h} $
+- $ \frac{\partial L}{\partial K} = \zeta_7^T \frac{Q}{\sqrt{d_k}} \in \mathbb{R}^{n \times h} $
 
 
 
