@@ -1,7 +1,7 @@
 ---
 author: Emil Goubasarian
 pubDatetime: 2025-10-03T20:40:08Z
-title: backpropagating Through Attention
+title: Backpropagating Through Attention
 featured: True
 draft: false
 tags: 
